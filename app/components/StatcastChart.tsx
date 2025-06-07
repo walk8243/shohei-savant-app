@@ -42,7 +42,7 @@ export default function StatcastChart() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('/api/csv');
+        const response = await fetch('/api/statcast');
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
