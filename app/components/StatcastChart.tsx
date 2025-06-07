@@ -42,7 +42,7 @@ export default function StatcastChart() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('/api/statcast');
+        const response = await fetch('/api/statcast?type=atbat');
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }

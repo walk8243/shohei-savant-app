@@ -14,7 +14,7 @@ export default function CsvViewer() {
   useEffect(() => {
     const fetchCsv = async () => {
       try {
-        const response = await fetch('/api/statcast');
+        const response = await fetch('/api/statcast?type=all');
         if (!response.ok) {
           throw new Error('CSVデータの取得に失敗しました');
         }
