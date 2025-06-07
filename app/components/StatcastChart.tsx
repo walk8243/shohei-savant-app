@@ -29,39 +29,39 @@ interface StatcastData {
   launch_angle: number;
 }
 
+interface CsvRow {
+  game_date: string;
+  launch_speed: string;
+  launch_angle: string;
+}
+
 export default function StatcastChart({ csvPath }: { csvPath: string }) {
   const [data, setData] = useState<StatcastData[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch(csvPath)
-      .then(response => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`/api/csv?path=${encodeURIComponent(csvPath)}`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        return response.text();
-      })
-      .then(csvText => {
-        const rows = csvText.split('\n').filter(row => row.trim() !== '');
-
-        const parsedData = rows.slice(1).map(row => {
-          const values = row.split(',');
-          const launch_speed = parseFloat(values[53]); // 54番目の列
-          const launch_angle = parseFloat(values[54]); // 55番目の列
-          
-          return {
-            game_date: values[0], // 日付は最初の列と仮定
-            launch_speed: isNaN(launch_speed) ? 0 : launch_speed,
-            launch_angle: isNaN(launch_angle) ? 0 : launch_angle
-          };
-        });
+        const jsonData = await response.json() as CsvRow[];
+        
+        const parsedData = jsonData.map(row => ({
+          game_date: row.game_date,
+          launch_speed: isNaN(parseFloat(row.launch_speed)) ? 0 : parseFloat(row.launch_speed),
+          launch_angle: isNaN(parseFloat(row.launch_angle)) ? 0 : parseFloat(row.launch_angle)
+        }));
 
         setData(parsedData);
-      })
-      .catch(error => {
+      } catch (error) {
         console.error('Error fetching data:', error);
-        setError(error.message);
-      });
+        setError(error instanceof Error ? error.message : 'データの取得中にエラーが発生しました');
+      }
+    };
+
+    fetchData();
   }, [csvPath]);
 
   if (error) {

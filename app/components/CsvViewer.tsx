@@ -1,11 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Papa from 'papaparse';
 
-interface CsvData {
-  headers: string[];
-  rows: string[][];
+interface CsvRow {
+  [key: string]: string;
 }
 
 interface CsvViewerProps {
@@ -13,28 +11,25 @@ interface CsvViewerProps {
 }
 
 export default function CsvViewer({ csvPath }: CsvViewerProps) {
-  const [csvData, setCsvData] = useState<CsvData | null>(null);
+  const [csvData, setCsvData] = useState<CsvRow[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [headers, setHeaders] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchCsv = async () => {
       try {
-        const response = await fetch(csvPath);
-        const csvText = await response.text();
+        const response = await fetch(`/api/csv?path=${encodeURIComponent(csvPath)}`);
+        if (!response.ok) {
+          throw new Error('CSVデータの取得に失敗しました');
+        }
+        const data = await response.json();
         
-        Papa.parse(csvText, {
-          complete: (results) => {
-            const headers = results.data[0] as string[];
-            const rows = results.data.slice(1) as string[][];
-            setCsvData({ headers, rows });
-          },
-          header: false,
-          error: (error: Error) => {
-            setError(`CSVの解析中にエラーが発生しました: ${error.message}`);
-          }
-        });
-      } catch {
-        setError('CSVファイルの読み込み中にエラーが発生しました');
+        if (data.length > 0) {
+          setHeaders(Object.keys(data[0]));
+          setCsvData(data);
+        }
+      } catch (error) {
+        setError(error instanceof Error ? error.message : 'CSVファイルの読み込み中にエラーが発生しました');
       }
     };
 
@@ -45,7 +40,7 @@ export default function CsvViewer({ csvPath }: CsvViewerProps) {
     return <div className="text-red-500 p-4">{error}</div>;
   }
 
-  if (!csvData) {
+  if (csvData.length === 0) {
     return <div className="p-4">読み込み中...</div>;
   }
 
@@ -54,7 +49,7 @@ export default function CsvViewer({ csvPath }: CsvViewerProps) {
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
-            {csvData.headers.map((header, index) => (
+            {headers.map((header, index) => (
               <th
                 key={index}
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -65,14 +60,14 @@ export default function CsvViewer({ csvPath }: CsvViewerProps) {
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {csvData.rows.map((row, rowIndex) => (
+          {csvData.map((row, rowIndex) => (
             <tr key={rowIndex}>
-              {row.map((cell, cellIndex) => (
+              {headers.map((header, cellIndex) => (
                 <td
                   key={cellIndex}
                   className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
                 >
-                  {cell}
+                  {row[header]}
                 </td>
               ))}
             </tr>
