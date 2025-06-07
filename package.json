@@ -1,5 +1,6 @@
 {
   "name": "shohei-savant-app",
+  "description": "savantで取得した大谷翔平のスタッツを表示するアプリケーション",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -23,5 +24,15 @@
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
     "@eslint/eslintrc": "^3"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/walk8243/shohei-savant-app.git"
+  },
+  "author": {
+    "name": "walk8243",
+    "email": "walk8243@gmail.com",
+    "url": "https://walk8243.xyz"
+  },
+  "license": "MIT"
 }
