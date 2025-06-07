@@ -6,11 +6,7 @@ interface CsvRow {
   [key: string]: string;
 }
 
-interface CsvViewerProps {
-  csvPath: string;
-}
-
-export default function CsvViewer({ csvPath }: CsvViewerProps) {
+export default function CsvViewer() {
   const [csvData, setCsvData] = useState<CsvRow[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [headers, setHeaders] = useState<string[]>([]);
@@ -18,7 +14,7 @@ export default function CsvViewer({ csvPath }: CsvViewerProps) {
   useEffect(() => {
     const fetchCsv = async () => {
       try {
-        const response = await fetch(`/api/csv?path=${encodeURIComponent(csvPath)}`);
+        const response = await fetch('/api/csv');
         if (!response.ok) {
           throw new Error('CSVデータの取得に失敗しました');
         }
@@ -34,7 +30,7 @@ export default function CsvViewer({ csvPath }: CsvViewerProps) {
     };
 
     fetchCsv();
-  }, [csvPath]);
+  }, []);
 
   if (error) {
     return <div className="text-red-500 p-4">{error}</div>;

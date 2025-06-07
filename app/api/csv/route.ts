@@ -3,20 +3,10 @@ import Papa from 'papaparse';
 import fs from 'fs';
 import path from 'path';
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
-    const { searchParams } = new URL(request.url);
-    const csvPath = searchParams.get('path');
-
-    if (!csvPath) {
-      return NextResponse.json(
-        { error: 'CSVパスが指定されていません' },
-        { status: 400 }
-      );
-    }
-
-    // CSVファイルのパスを構築
-    const filePath = path.join(process.cwd(), 'public', csvPath);
+    // dataディレクトリからCSVファイルを読み込む
+    const filePath = path.join(process.cwd(), 'data', 'statcast.csv');
     
     // CSVファイルを読み込む
     const csvText = fs.readFileSync(filePath, 'utf-8');

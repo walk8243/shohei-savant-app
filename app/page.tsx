@@ -6,9 +6,9 @@ export default function Home() {
     <main className="min-h-screen p-8">
       <h1 className="text-2xl font-bold mb-6">Statcastデータ</h1>
       <div className="mb-8">
-        <StatcastChart csvPath="/data/statcast.csv" />
+        <StatcastChart />
       </div>
-      <CsvViewer csvPath="/data/statcast.csv" />
+      <CsvViewer />
     </main>
   );
 }

@@ -35,14 +35,14 @@ interface CsvRow {
   launch_angle: string;
 }
 
-export default function StatcastChart({ csvPath }: { csvPath: string }) {
+export default function StatcastChart() {
   const [data, setData] = useState<StatcastData[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`/api/csv?path=${encodeURIComponent(csvPath)}`);
+        const response = await fetch('/api/csv');
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -62,7 +62,7 @@ export default function StatcastChart({ csvPath }: { csvPath: string }) {
     };
 
     fetchData();
-  }, [csvPath]);
+  }, []);
 
   if (error) {
     return <div className="text-red-500">エラーが発生しました: {error}</div>;
