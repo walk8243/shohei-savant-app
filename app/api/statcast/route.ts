@@ -8,7 +8,7 @@ interface StatcastRow {
   [key: string]: string;
 }
 
-type DataType = 'all' | 'atbat';
+type DataType = 'all' | 'atbat' | 'batted';
 
 export async function GET(request: Request) {
   try {
@@ -29,9 +29,16 @@ export async function GET(request: Request) {
 
     // データタイプに応じてフィルタリング
     let filteredData = results.data;
-    if (type !== 'all') {
-      // デフォルトまたは'atbat'の場合は打席結果のみを返す
+    if (type === 'atbat') {
+      // 打席結果のみを返す
       filteredData = results.data.filter(row => row.events && row.events.trim() !== '');
+    } else if (type === 'batted') {
+      // 打球データのみを返す（打球距離、打球速度、打球角度が全て存在するデータ）
+      filteredData = results.data.filter(row => 
+        row.hit_distance_sc && row.hit_distance_sc.trim() !== '' &&
+        row.launch_speed && row.launch_speed.trim() !== '' &&
+        row.launch_angle && row.launch_angle.trim() !== ''
+      );
     }
 
     return NextResponse.json(filteredData);
